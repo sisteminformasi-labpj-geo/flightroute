@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flight Route by Remote Sensing Laboratory UGM</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:rgba(22,24,30,.74);--ln:rgba(255,255,255,.12);--tx:#f5f6f8;--mu:#9aa1ad;--ac:#2d8cff;--ok:#30d158;--or:#ff9f0a;color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}body{position:fixed;inset:0;width:100%;height:100dvh}
+body{font:15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;color:var(--tx);background:#111}
+#map{position:absolute;inset:0}
+.glass{background:var(--bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--ln);border-top-color:rgba(255,255,255,.22);box-shadow:0 10px 40px rgba(0,0,0,.35)}
+#panel{position:absolute;z-index:1000;right:16px;top:16px;bottom:16px;width:372px;border-radius:22px;display:flex;flex-direction:column;overflow:hidden}
+.step{display:flex;flex-direction:column;min-height:0;flex:1}.step[hidden]{display:none}
+.hd{padding:20px 20px 12px}.hd h1{font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:0}
+.hd p{margin:6px 0 0;color:var(--mu);font-size:13px}
+.sc{overflow:auto;padding:4px 20px 16px;flex:1}
+button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s ease-out,background .15s}
+button:active:not(:disabled){transform:scale(.97)}button:disabled{opacity:.4;cursor:not-allowed}
+.item{display:flex;width:100%;align-items:center;justify-content:space-between;text-align:left;padding:14px 16px;margin-bottom:8px;border-radius:14px;background:rgba(255,255,255,.07)}
+.item:hover:not(:disabled){background:rgba(255,255,255,.12)}.item small{color:var(--mu);font-size:12px}
+.item.on{background:var(--ac)}
+.ghost{background:none;color:var(--ac);padding:8px 4px;font-weight:500}
+.btn{background:var(--ac);color:#fff;padding:13px;border-radius:14px;font-weight:600;width:100%}
+.btn.sec{background:rgba(255,255,255,.1)}
+.seg{display:flex;background:rgba(255,255,255,.08);border-radius:12px;padding:3px;gap:2px}
+.seg button{flex:1;padding:8px 6px;border-radius:9px;background:none;font-size:13px;color:var(--mu)}
+.seg button.on{background:rgba(255,255,255,.2);color:#fff;font-weight:600}
+.seg button:disabled{opacity:.3}
+.lbl{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin:16px 4px 8px}
+.f{padding:10px 4px;border-bottom:1px solid var(--ln)}.f[hidden]{display:none}
+.f>label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}.f>label span{color:var(--mu)}
+.nr{display:flex;gap:8px;align-items:center}
+.nr input{flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid var(--ln);border-radius:10px;color:var(--tx);padding:8px;text-align:center;font:inherit;font-variant-numeric:tabular-nums}
+.nr button{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);font-size:18px;line-height:1}
+input[type=range]{width:100%;accent-color:var(--ac);margin:8px 0 0}
+.f .seg{margin-top:2px}
+.sw{display:flex;justify-content:space-between;align-items:center}
+.sw button{width:46px;height:28px;border-radius:14px;background:rgba(255,255,255,.18);position:relative}
+.sw button::after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.sw button.on{background:var(--ok)}.sw button.on::after{transform:translateX(18px)}
+.note{font-size:12px;color:var(--mu);margin-top:6px}
+details{margin-top:14px}summary{cursor:pointer;font-weight:600;padding:10px 4px;list-style:none;color:var(--ac)}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 20px;border-top:1px solid var(--ln);background:rgba(0,0,0,.2)}
+.stats div{text-align:center}.stats b{display:block;font-size:16px;font-variant-numeric:tabular-nums}.stats span{font-size:10.5px;color:var(--mu)}
+.ft{padding:12px 20px;display:flex;gap:8px}
+.name{background:none;border:0;border-bottom:1px dashed var(--ln);color:var(--tx);font:600 22px/1.2 inherit;letter-spacing:-.02em;width:100%;padding:2px 0}
+#bar{position:absolute;z-index:1000;top:16px;left:16px;display:flex;align-items:center;gap:14px;padding:8px 18px 8px 8px;border-radius:40px}
+#bar[hidden]{display:none}
+#ok{width:46px;height:46px;border-radius:50%;background:var(--ok);color:#fff;font-size:22px}
+#bar b{font-variant-numeric:tabular-nums}
+.vtx{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--ac);box-shadow:0 1px 6px rgba(0,0,0,.5);cursor:grab}
+.pin{background:var(--ok);color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;font-weight:700;font-size:13px;border:2px solid #fff}
+#toast{position:absolute;z-index:2000;bottom:24px;left:64px;transform:translateY(120px);padding:10px 16px;border-radius:14px;transition:transform .28s cubic-bezier(.23,1,.32,1);max-width:90vw}
+#toast.show{transform:none}
+@media(max-width:760px){#panel{left:8px;right:8px;width:auto;top:auto;height:56vh;bottom:8px}#bar{left:8px;top:8px}#hud{left:8px;right:8px;top:8px}#toast{left:8px;bottom:calc(56vh + 16px)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(prefers-reduced-transparency:reduce){.glass{background:#1b1d23;backdrop-filter:none}}
+.item,.seg button,.nr input{min-height:40px}.btn{border-radius:12px;min-height:44px}.item{border-radius:12px}
+.seg{border-radius:12px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px}
+.seg.g{grid-auto-flow:row;grid-template-columns:1fr 1fr}.seg.g1{grid-auto-flow:row;grid-template-columns:1fr}
+.seg button{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;padding:8px 10px;border-radius:9px}
+.nr{display:grid;grid-template-columns:40px 1fr 40px;gap:8px}.nr button{width:40px;height:40px;border-radius:12px}.nr input{width:100%;border-radius:12px}
+.f{padding:12px 0}.f>label{height:20px;align-items:center;margin-bottom:8px}.sw{min-height:40px}.sw span{font-size:14px}
+.sw button.pill{width:auto;min-width:76px;height:36px;padding:0 14px;border-radius:12px;background:rgba(255,255,255,.12);color:var(--ac);font-weight:600}.sw button.pill::after{display:none}
+#legend{padding:8px 0 2px}#legend[hidden]{display:none}
+.lg{display:grid;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;width:100%;min-height:40px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.07);margin-bottom:6px;text-align:left;transition:opacity .16s cubic-bezier(.23,1,.32,1)}
+.lg i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 system-ui;color:#fff}.lg.off{opacity:.4}
+.pn{width:20px;height:20px;border-radius:50%;color:#fff;font:700 11px/16px system-ui;text-align:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#hud{position:absolute;z-index:1000;left:16px;top:16px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:20px;padding:12px 18px;border-radius:18px;background:var(--bg);border:1px solid var(--ln);border-top-color:rgba(255,255,255,.22)}
+#hud[hidden]{display:none}#hud b{white-space:nowrap}
+.dd{position:relative}.ddb{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:40px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--ln);text-align:left}
+.ddb i{font-style:normal;color:var(--mu);transition:transform .16s cubic-bezier(.23,1,.32,1)}.dd.open .ddb i{transform:rotate(180deg)}
+.ddl{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;padding:4px;border-radius:14px;background:#262a33;border:1px solid var(--ln);box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;visibility:hidden;transform:translateY(-4px) scale(.98);transform-origin:top;transition:opacity .15s cubic-bezier(.23,1,.32,1),transform .15s cubic-bezier(.23,1,.32,1),visibility 0s .15s}
+.dd.open .ddl{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.ddl button{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:40px;padding:8px 10px;border-radius:9px;background:none;text-align:left}
+.ddl button b{opacity:0;color:var(--ac)}.ddl button.on{color:var(--ac)}.ddl button.on b{opacity:1}
+@media(hover:hover) and (pointer:fine){.ddl button:hover{background:rgba(255,255,255,.08)}}
+.advh{display:grid;grid-template-columns:72px 1fr 72px;align-items:center;padding:8px 0 4px;text-align:center}.advh .ghost{justify-self:start}
+#adv-open{margin-top:12px}
+[hidden]{display:none!important}
+#info{position:absolute;z-index:1000;left:16px;bottom:100px;width:36px;height:36px;border-radius:50%;font:italic 700 17px/1 Georgia,serif;color:var(--tx)}
+#about{position:absolute;inset:0;z-index:3000;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:opacity .2s cubic-bezier(.23,1,.32,1),visibility 0s .2s}
+#about.open{opacity:1;visibility:visible;transition-delay:0s}
+#about .card{position:relative;width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:28px 24px 22px;border-radius:22px;background:rgba(30,33,40,.9);transform:scale(.96);transition:transform .2s cubic-bezier(.23,1,.32,1)}
+#about.open .card{transform:none}
+#about h2{margin:0 0 8px;font-size:24px;letter-spacing:-.02em;line-height:1.15}#about h3{margin:20px 0 8px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+#about p{margin:0 0 12px;font-size:14px;color:#d6d9df}#about small{color:var(--mu);font-size:12px}
+#about ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:6px}
+#about li{display:grid;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.07)}#about li span{font-size:12px;color:var(--mu)}
+#x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);font-size:20px;line-height:1}
+@media(max-width:760px){#info{bottom:calc(56vh + 20px)}}
+</style></head><body>
+<div id="map"></div>
+<aside id="panel" class="glass">
+ <section class="step" id="s-menu"><div class="hd"><h1>Flight Route</h1><p>by Remote Sensing Laboratory UGM</p></div><div class="sc">
+  <button class="item" disabled>Waypoint <small>Belum ada pengembangan</small></button>
+  <button class="item on" id="go-area">Area Route <span>›</span></button>
+  <button class="item" disabled>Linear Route <small>Belum ada pengembangan</small></button>
+  <button class="item" disabled>Slope Route <small>Belum ada pengembangan</small></button>
+  <button class="item" disabled>Geometric Route <small>Belum ada pengembangan</small></button></div></section>
+ <section class="step" id="s-draw" hidden><div class="hd"><h1>Draw Area</h1><p>Tap the satellite map to add corners, drag a corner to adjust. Press the green check when done.</p></div>
+  <div class="sc"><button class="item" id="undo">Undo last corner</button><button class="item" id="clear">Clear</button><button class="ghost" id="draw-back">‹ Back</button></div></section>
+ <section class="step" id="s-sensor" hidden><div class="hd"><h1>Sensor</h1><p id="area-sum"></p></div><div class="sc">
+  <div class="lbl">Select Aircraft Model</div><div class="dd" id="dd-air"></div>
+  <div class="lbl">Select Camera Model</div><div class="dd" id="dd-cam"></div>
+  <div class="lbl">Select Lens (one or both)</div><div class="seg" id="sg-lens"><button data-v="RGB" class="on">RGB</button><button data-v="MS" disabled>MS</button></div></div>
+  <div class="ft"><button class="btn sec" id="sensor-back">Back</button><button class="btn" id="sensor-ok">OK</button></div></section>
+ <section class="step" id="s-cfg" hidden>
+  <div class="hd"><input class="name" id="rname" value="Area Route 1" aria-label="Route name"><p id="sens"></p>
+   <div class="seg" style="margin-top:12px" id="sg-mode"><button data-v="o" class="on">Ortho Collection</button><button data-v="b">Oblique Collection</button></div></div>
+  <div class="sc" id="fields"></div>
+  <div class="ft"><button class="btn sec" id="cfg-back">Sensor</button><button class="btn" id="export">Export KML</button></div></section>
+</aside>
+<div id="bar" class="glass" hidden><button id="ok" disabled aria-label="Finish area">✓</button><span>Mapping area <b id="ha">0.0</b> ha</span></div>
+<div class="stats glass" id="hud" hidden><div><b id="st-area">–</b><span>Area (ha)</span></div><div><b id="st-photo">–</b><span>Photos</span></div><div><b id="st-dist">–</b><span>Distance</span></div><div><b id="st-time">–</b><span>Time</span></div></div>
+<button id="info" class="glass" aria-label="Informasi">i</button>
+<div id="about" aria-hidden="true"><div class="card glass" role="dialog" aria-label="Informasi aplikasi"><button id="x" aria-label="Tutup">×</button>
+<h2>Flight Route by Remote Sensing Laboratory UGM</h2><p>Platform digital yang dirancang sebagai sarana pembelajaran untuk memahami dan merancang rute penerbangan drone guna mendukung kegiatan survei, pemetaan, dan akuisisi data penginderaan jauh.</p>
+<h3>Tim Pengembang</h3><ul><li><b>Muhammad Thoriq Pratama, A.Md.</b><span>Project Manager</span></li><li><b>Bachron Muhaimin</b><span>Deputy Project Manager</span></li><li><b>Yakub Kartiko Utomo</b><span>Full Stack Developer</span></li><li><b>Bagas Istad</b><span>User Acceptance Tester</span></li><li><b>Ahmad Hasan Adlai Nurzain</b><span>QA Manual Tester</span></li></ul>
+<p>Dikembangkan oleh mahasiswa Program Studi Kartografi dan Penginderaan Jauh Angkatan 2023 sebagai bagian dari pengembangan dan implementasi teknologi pendukung kegiatan penginderaan jauh berbasis wahana udara nirawak (UAV).</p>
+<p>Pengembangan aplikasi ini dilaksanakan melalui kolaborasi dengan Laboratorium Penginderaan Jauh, Departemen Sains Informasi Geografi, Fakultas Geografi, Universitas Gadjah Mada.</p>
+<small>© 2026 Laboratorium Penginderaan Jauh. Seluruh hak cipta dilindungi.</small></div></div>
+<div id="toast" class="glass"></div>
+<input type="file" id="dsmfile" accept=".tif,.tiff,.dem,.asc" hidden>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),R=Math.PI/180,RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const map=L.map('map',{zoomControl:false,doubleClickZoom:false}).setView([-7.7956,110.3695],17);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri World Imagery'}).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:.8}).addTo(map);
+L.control.zoom({position:'bottomleft'}).addTo(map);
+const LENS={RGB:{k:12.29/0.00328,rw:1.409,rh:1.056,mi:0.7},MS:{k:4.34/0.0025,rw:1.49,rh:1.12,mi:1.0}};
+const S={step:'menu',pts:[],cam:'M3E',lenses:['RGB'],mode:'o',gsd:2,obPitch:-60,altMode:'Relative to Takeoff Point (ALT)',rtf:false,dsm:'',alt:75,tfa:75,elev:false,safe:30,speed:8,course:71,done:'Return To Home',
+ tgt:0,side:70,front:80,sideO:70,frontO:80,margin:0,photo:'Timed Interval Shot',cca:false,rot:'Along the Route',yaw:0,pm:'Defined',pitch:-90,start:null,smart:false,hide:new Set(),picking:false,toSpd:15,sep:false,obSpd:12};
+const kmin=()=>Math.min(...S.lenses.map(l=>LENS[l].k));
+const sinP=()=>Math.sin(Math.abs(S.obPitch)*R);
+const W=()=>S.mode=='o',B=()=>S.mode=='b',AGL=()=>S.altMode=='AGL';
+const FIELDS=[
+{k:'smart',t:'s',l:'Smart Oblique',w:B,note:'On: only 2 flight routes (Top to Bottom, Left to Right), each extended 1/5 beyond the AOI.'},
+{k:'gsd',t:'n',l:'Ortho GSD',u:'cm/px',min:.05,max:30,st:.01},
+{k:'obPitch',t:'n',l:'Gimbal Pitch (Oblique)',u:'°',min:-85,max:-40,st:1,w:B},
+{k:'obGsd',t:'n',l:'Oblique GSD',u:'cm/px',min:.05,max:60,st:.01,w:B},
+{k:'altMode',t:'c',l:'Altitude Mode',o:['Relative to Takeoff Point (ALT)','ASL (EGM96)','AGL']},
+{k:'rtf',t:'s',l:'Real-Time Follow',w:AGL},
+{k:'dsm',t:'d',l:'DSM File',w:AGL},
+{k:'tfa',t:'n',l:'Terrain Follow Altitude',u:'m',min:25,max:1500,st:1,w:AGL},
+{k:'alt',t:'n',l:'Route Altitude',u:'m',min:12,max:1500,st:1,w:()=>!AGL()},
+{k:'elev',t:'s',l:'Elevation Optimization',w:W,note:'When enabled, aircraft will fly to center of mapping area after completing flight route and capture a series of tilt-angle photos to increase elevation accuracy.'},
+{k:'safe',t:'n',l:'Safe Takeoff Altitude',u:'m',min:2,max:1500,st:1},
+{k:'speed',t:'n',l:'Speed',u:'m/s',min:.1,max:9.97,st:.1},
+{k:'course',t:'n',l:'Course Angle',u:'°',min:0,max:359,st:1},
+{k:'done',t:'c',l:'Upon Completion',o:['Exit Route Mode','Return To Home','Land','Return to start point and hover']},
+{t:'h',l:'Advanced Settings'},
+{k:'tgt',t:'n',l:'Target Surface to Takeoff Point',u:'m',min:-200,max:1500,st:1,w:B},
+{k:'side',t:'n',l:'Side Overlap Ratio',u:'%',min:10,max:90,st:1},
+{k:'front',t:'n',l:'Frontal Overlap Ratio',u:'%',min:10,max:90,st:1},
+{k:'sideO',t:'n',l:'Side Overlap Ratio (Oblique)',u:'%',min:10,max:90,st:1,w:B},
+{k:'frontO',t:'n',l:'Frontal Overlap Ratio (Oblique)',u:'%',min:10,max:90,st:1,w:B},
+{k:'margin',t:'n',l:'Margin',u:'m',min:0,max:100,st:1},
+{k:'photo',t:'c',l:'Photo Mode',o:['Timed Interval Shot','Distance Interval Shot']},
+{k:'cca',t:'s',l:'Custom Camera Angle',w:W},
+{k:'rot',t:'c',l:'Aircraft Rotate',o:['Along the Route','Define'],w:()=>W()&&S.cca},
+{k:'yaw',t:'n',l:'Aircraft Yaw (magnetic north = 0°)',u:'°',min:0,max:359,st:1,w:()=>W()&&S.cca&&S.rot=='Define',note:'Gimbal yaw direction is consistent with aircraft heading.'},
+{k:'pm',t:'c',l:'Gimbal Pitch Rotation',o:['Defined','Manual'],w:()=>W()&&S.cca},
+{k:'pitch',t:'n',l:'Gimbal Pitch',u:'°',min:-90,max:-30,st:1,w:()=>W()&&S.cca&&S.pm=='Defined'},
+{k:'start',t:'p',l:'Route Start Point'},
+{k:'toSpd',t:'n',l:'Takeoff Speed',u:'m/s',min:1,max:15,st:1},
+{k:'sep',t:'s',l:'Set Oblique Route Speed Separately',w:B},
+{k:'obSpd',t:'n',l:'Speed (Oblique)',u:'m/s',min:1,max:12,st:1,w:()=>B()&&S.sep}];
+const FM={};FIELDS.forEach(f=>f.k&&(FM[f.k]=f));
+const fmt=(v,st)=>(+v).toFixed(st<1?(st<.1?2:1):0);
+function dd(el,opts,get,pick){el.innerHTML=`<button class="ddb" aria-haspopup="listbox"><span></span><i>▾</i></button><div class="ddl" role="listbox">${opts.map(o=>`<button data-v="${o}" role="option"><span>${o}</span><b>✓</b></button>`).join('')}</div>`;
+ const r=()=>{el.querySelector('.ddb span').textContent=get();el.querySelectorAll('.ddl button').forEach(b=>b.classList.toggle('on',b.dataset.v==get()))};
+ el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.classList.contains('ddb'))el.classList.toggle('open');else{el.classList.remove('open');pick(b.dataset.v);r()}});r();return r}
+function setAdv(v){S.adv=v;$('#fbasic').hidden=v;$('#adv-open').hidden=v;$('#fadv').hidden=!v;$('#s-cfg .hd').hidden=v;$('#fields').scrollTop=0;
+ if(!RM)(v?$('#fadv'):$('#fbasic')).animate([{opacity:0,transform:'translateX('+(v?'':'-')+'14px)'},{opacity:1,transform:'none'}],{duration:220,easing:'cubic-bezier(.23,1,.32,1)'})}
+function build(){const box=$('#fields');box.innerHTML='<div id="fbasic"><div id="legend" hidden></div></div><button class="item" id="adv-open">Advanced Settings <span>›</span></button><div id="fadv" hidden><div class="advh"><button class="ghost" id="adv-back">‹ Back</button><b>Advanced Settings</b><span></span></div></div>';let cur=$('#fbasic');
+ for(const f of FIELDS){
+  if(f.t=='h'){cur=$('#fadv');continue}
+  const e=document.createElement('div');e.className='f';e.dataset.k=f.k;f.el=e;
+  if(f.t=='n')e.innerHTML=`<label>${f.l}<span>${f.u}</span></label><div class="nr"><button data-d="-1" aria-label="decrease">−</button><input type="number" step="${f.st}"><button data-d="1" aria-label="increase">+</button></div><input type="range" step="${f.st}">`;
+  if(f.t=='c'){if(f.o.length>2){e.innerHTML=`<label>${f.l}</label>`;const d=document.createElement('div');d.className='dd';e.appendChild(d);f.r=dd(d,f.o,()=>S[f.k],v=>setv(f.k,v))}else e.innerHTML=`<label>${f.l}</label><div class="seg">${f.o.map(o=>`<button data-v="${o}">${o}</button>`).join('')}</div>`}
+  if(f.t=='s')e.innerHTML=`<div class="sw"><span>${f.l}</span><button role="switch" aria-label="${f.l}"></button></div>`+(f.note?`<div class="note">${f.note}</div>`:'');
+  if(f.t=='d')e.innerHTML=`<label>${f.l}</label><div class="seg"><button data-a="imp">Import Local File</button><button data-a="net">Download from Internet</button></div><div class="note"></div>`;
+  if(f.t=='p')e.innerHTML=`<div class="sw"><span>${f.l}</span><button class="pill" data-a="start"></button></div><div class="note">Tidak diset: rute otomatis mulai dari sudut terdekat takeoff.</div>`;
+  if(f.note&&f.t=='n')e.insertAdjacentHTML('beforeend',`<div class="note">${f.note}</div>`);
+  cur.appendChild(e);f.num=e.querySelector('input[type=number]');f.rng=e.querySelector('input[type=range]');
+ }}
+function setv(k,v){const f=FM[k];if(typeof v=='number'){if(isNaN(v))return;v=Math.min(f.max,Math.max(f.min,v))}
+ S[k]=v;
+ if(k=='obGsd')S.gsd=S.obGsd*sinP();
+ if(k=='tfa')S.alt=v;
+ if(k=='alt')S.alt=v;
+ if(k=='gsd'||k=='obGsd')S.alt=S.gsd/100*kmin();
+ if(k=='altMode'&&AGL())S.alt=Math.max(25,S.alt);
+ links(k);update()}
+function links(k){S.alt=Math.min(1500,Math.max(AGL()?25:12,S.alt));
+ if(k!='gsd'&&k!='obGsd'||S.alt!=S.gsd/100*kmin())S.gsd=S.alt/kmin()*100;
+ S.tfa=S.alt;S.obGsd=S.gsd/sinP()}
+function sync(){
+ for(const f of FIELDS){if(!f.k)continue;f.el.hidden=f.w?!f.w():false;
+  if(f.t=='n'){let mx=f.max;if(f.k=='speed')mx=Math.min(9.97,vmax().o);if(f.k=='obSpd')mx=Math.min(12,vmax().b);
+   f.num.min=f.rng.min=f.min;f.num.max=f.rng.max=mx;if(document.activeElement!=f.num)f.num.value=fmt(S[f.k],f.st);f.rng.value=S[f.k]}
+  if(f.t=='c'){f.r?f.r():f.el.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==S[f.k]))}
+  if(f.t=='s')f.el.querySelector('button').classList.toggle('on',!!S[f.k]);
+  if(f.t=='d')f.el.querySelector('.note').textContent=S.dsm?'DSM: '+S.dsm+' (reselect untuk mengganti)':'Belum ada DSM. Terrain follow memakai DSM ini.';
+  if(f.t=='p')f.el.querySelector('[data-a=start]').textContent=S.picking?'Tap map…':S.start?'Reset':'Set'}
+}
+/* geometry */
+let lat0=0,lng0=0,mx=1,my=1;
+const toM=p=>[(p.lng-lng0)*mx,(p.lat-lat0)*my],fromM=m=>L.latLng(lat0+m[1]/my,lng0+m[0]/mx);
+function area(P){let a=0;for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length];a+=p[0]*q[1]-q[0]*p[1]}return Math.abs(a)/2}
+function grid(P,course,ls,m0,out=0){const th=course*R,d=[Math.sin(th),Math.cos(th)],n=[Math.cos(th),-Math.sin(th)];
+ const Q=P.map(p=>[p[0]*d[0]+p[1]*d[1],p[0]*n[0]+p[1]*n[1]]);
+ const us0=Q.map(q=>q[0]),m=m0+out*(Math.max(...us0)-Math.min(...us0)),vs=Q.map(q=>q[1]),v0=Math.min(...vs),v1=Math.max(...vs),lines=[];let flip=false;
+ const vv=[];for(let v=v0+ls/2;v<=v1;v+=ls)vv.push(v);if(!vv.length)vv.push((v0+v1)/2);
+ for(const v of vv){const us=[];
+  for(let i=0;i<Q.length;i++){const a=Q[i],b=Q[(i+1)%Q.length];if((a[1]<=v&&b[1]>v)||(b[1]<=v&&a[1]>v))us.push(a[0]+(v-a[1])*(b[0]-a[0])/(b[1]-a[1]))}
+  us.sort((x,y)=>x-y);
+  for(let i=0;i+1<us.length;i+=2){let a=us[i]-m,b=us[i+1]+m;if(flip)[a,b]=[b,a];flip=!flip;
+   lines.push([[a*d[0]+v*n[0],a*d[1]+v*n[1]],[b*d[0]+v*n[0],b*d[1]+v*n[1]]])}}
+ return lines}
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function vmax(){const sp=spacing();return{o:Math.min(...S.lenses.map(l=>sp.po/LENS[l].mi)),b:Math.min(...S.lenses.map(l=>sp.pb/LENS[l].mi))}}
+function spacing(){const H=S.alt,sl=H/sinP();let lo=1e9,po=1e9,lb=1e9,pb=1e9;
+ for(const l of S.lenses){const L_=LENS[l];lo=Math.min(lo,H*L_.rw*(1-S.side/100));po=Math.min(po,H*L_.rh*(1-S.front/100));
+  lb=Math.min(lb,sl*L_.rw*(1-S.sideO/100));pb=Math.min(pb,sl*L_.rh*(1-S.frontO/100))}
+ return{lo,po,lb,pb}}
+/* map layers */
+const lg=L.layerGroup().addTo(map),poly=L.polygon([],{color:'#2d8cff',weight:2,fillOpacity:.18}).addTo(map),mk=[];let startMk=null,lastPlan=null;
+const vtx=i=>L.marker(S.pts[i],{draggable:true,icon:L.divIcon({className:'vtx',iconSize:[18,18]})});
+function redrawPoly(){poly.setLatLngs(S.pts);const ha=S.pts.length>2?(lat0=S.pts[0].lat,lng0=S.pts[0].lng,mx=111320*Math.cos(lat0*R),my=110574,area(S.pts.map(toM))/1e4):0;
+ $('#ha').textContent=ha.toFixed(1);$('#ok').disabled=S.pts.length<3;return ha}
+function addPt(ll){S.pts.push(ll);const i=S.pts.length-1,m=vtx(i).addTo(map);m.on('drag',e=>{S.pts[mk.indexOf(m)]=e.target.getLatLng();redrawPoly();update()});mk.push(m);redrawPoly()}
+function clearPts(){mk.forEach(m=>m.remove());mk.length=0;S.pts=[];redrawPoly();lg.clearLayers()}
+map.on('click',e=>{if(S.picking){S.start=e.latlng;S.picking=false;placeStart();sync();update();return}
+ if(S.step=='draw')addPt(e.latlng)});
+function placeStart(){startMk&&startMk.remove();startMk=null;if(S.start)startMk=L.marker(S.start,{icon:L.divIcon({className:'',html:'<div class="pin">S</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map)}
+/* planner */
+const OUT=0.2;/* share of AOI length flown beyond each end of the oblique passes 4-5 and Smart Oblique */
+const PASS=[{n:2,l:'Left → Right',a:90,o:0,c:'#0a84ff'},{n:3,l:'Top → Bottom',a:180,o:0,c:'#bf5af2'},{n:4,l:'Right → Left',a:270,o:OUT,c:'#ff9f0a'},{n:5,l:'Bottom → Top',a:0,o:OUT,c:'#ff453a'}];
+const SMART=[{n:1,l:'Top → Bottom',a:180,o:OUT,c:'#bf5af2'},{n:2,l:'Left → Right',a:90,o:OUT,c:'#0a84ff'}];
+const pin=(p,n,c)=>L.marker(fromM(p),{interactive:false,icon:L.divIcon({className:'',html:`<div class="pn" style="background:${c}">${n}</div>`,iconSize:[20,20],iconAnchor:[10,10]})}).addTo(lg);
+function legend(items){const e=$('#legend');e.hidden=!items.length;e.innerHTML=items.map(p=>`<button class="lg${S.hide.has(p.n)?' off':''}" data-n="${p.n}"><i style="background:${p.c}">${p.n}</i><span>${p.l}</span><span style="color:var(--mu)">${S.hide.has(p.n)?'○':'●'}</span></button>`).join('')}
+function update(){if(S.step!='cfg'||S.pts.length<3)return;links();
+ const ha=redrawPoly(),P=S.pts.map(toM),sp=spacing(),vm=vmax();
+ if(S.speed>vm.o){S.speed=+vm.o.toFixed(1);toast('Speed dibatasi '+S.speed+' m/s agar interval foto tidak terlalu cepat')}
+ if(S.obSpd>vm.b)S.obSpd=Math.floor(vm.b);
+ const sm=B()&&S.smart,ortho=sm?[]:grid(P,S.course,sp.lo,S.margin);
+ const passes=B()?(sm?SMART:PASS).map(p=>({...p,ls:grid(P,S.course+p.a,sp.lb,S.margin,p.o)})):[];
+ let po=ortho.flat();if(S.start&&po.length){const s=toM(S.start);if(dist(po[po.length-1],s)<dist(po[0],s))po.reverse()}
+ const path=a=>a.reduce((s,p,i)=>s+(i?dist(a[i-1],p):0),0),ph=(ls,q)=>ls.reduce((a,l)=>a+Math.ceil(dist(l[0],l[1])/q)+1,0);
+ const vB=B()&&S.sep?S.obSpd:S.speed;let dO=path(po),dB=0,photos=ph(ortho,sp.po),t=dO/S.speed+ortho.length*3+S.safe/S.toSpd;
+ passes.forEach(p=>{p.pts=p.ls.flat();const d=path(p.pts);dB+=d;t+=d/vB+p.ls.length*3;photos+=ph(p.ls,sp.pb)});
+ lg.clearLayers();
+ if(po.length&&!(B()&&S.hide.has(1))){L.polyline(po.map(fromM),{color:'#30d158',weight:3}).addTo(lg);po.forEach((p,i)=>(i%2==0||i==po.length-1)&&L.circleMarker(fromM(p),{radius:3,color:'#fff',weight:1,fillColor:'#30d158',fillOpacity:1}).addTo(lg));if(B())pin(po[0],1,'#30d158')}
+ passes.forEach(p=>{if(S.hide.has(p.n))return;L.polyline(p.pts.map(fromM),{color:p.c,weight:2.5}).addTo(lg);pin(p.pts[0],p.n,p.c)});
+ let ep=[];
+ if(S.elev&&W()&&po.length){const c=P.reduce((a,p)=>[a[0]+p[0]/P.length,a[1]+p[1]/P.length],[0,0]),last=po[po.length-1],dE=dist(last,c);ep=[last,c];dO+=dE;photos+=12;t+=dE/S.speed+24;
+  L.circleMarker(fromM(c),{radius:7,color:'#fff',weight:2,fillColor:'#ffd60a',fillOpacity:1}).addTo(lg).bindTooltip('Elevation optimization: 12 tilt photos aimed at center')}
+ lastPlan={po:po.concat(ep.slice(1)),pb:passes.flatMap(p=>p.pts)};
+ legend(B()?[...(sm?[]:[{n:1,l:'Ortho nadir',c:'#30d158'}]),...passes]:[]);
+ $('#st-area').textContent=ha.toFixed(2);$('#st-photo').textContent=photos;$('#st-dist').textContent=((dO+dB)/1000).toFixed(2)+' km';
+ const mnt=Math.ceil(t/60);$('#st-time').textContent=mnt+' min'+(mnt>25?' · '+Math.ceil(mnt/25)+' bat':'');
+ sync()}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}
+/* navigation */
+function go(s){const prev=$('.step:not([hidden])'),next=$('#s-'+s);S.step=s;if(s!='cfg'&&S.adv)setAdv(false);if(prev&&prev!==next)prev.hidden=true;next.hidden=false;
+ $('#bar').hidden=s!='draw';$('#hud').hidden=s!='cfg';
+ if(!RM)next.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.23,1,.32,1)'})}
+function seg(id,fn){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled)fn(b)})}
+$('#go-area').onclick=()=>go('draw');
+$('#draw-back').onclick=()=>{clearPts();go('menu')};
+$('#undo').onclick=()=>{const m=mk.pop();if(m){m.remove();S.pts.pop();redrawPoly()}};
+$('#clear').onclick=clearPts;
+$('#ok').onclick=()=>{const ha=redrawPoly();$('#area-sum').textContent='Mapping area '+ha.toFixed(1)+' ha';map.fitBounds(poly.getBounds(),{paddingTopRight:[400,110],maxZoom:18});go('sensor')};
+let air='Mavic M3E Series';dd($('#dd-air'),['Mavic M3E Series'],()=>air,v=>air=v);
+dd($('#dd-cam'),['M3E','M3M'],()=>S.cam,v=>{S.cam=v;const ms=$('#sg-lens [data-v=MS]');ms.disabled=v!='M3M';if(v!='M3M'){S.lenses=['RGB'];$('#sg-lens [data-v=RGB]').classList.add('on');ms.classList.remove('on')}});
+document.addEventListener('pointerdown',e=>document.querySelectorAll('.dd.open').forEach(d=>{if(!d.contains(e.target))d.classList.remove('open')}));
+seg('#sg-lens',b=>{const v=b.dataset.v,on=S.lenses.includes(v);if(on&&S.lenses.length==1)return;S.lenses=on?S.lenses.filter(x=>x!=v):[...S.lenses,v];b.classList.toggle('on',!on)});
+$('#sensor-back').onclick=()=>go('draw');
+$('#sensor-ok').onclick=()=>{$('#sens').textContent='M3E Series · '+S.cam+' · '+S.lenses.join('+');S.alt=S.gsd/100*kmin();go('cfg');update()};
+$('#cfg-back').onclick=()=>go('sensor');
+seg('#sg-mode',b=>{S.mode=b.dataset.v;$('#sg-mode').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));update()});
+const box=$('#fields');
+box.addEventListener('input',e=>{const f=FM[e.target.closest('.f')?.dataset.k];if(f&&e.target.type=='range')setv(f.k,+e.target.value)});
+box.addEventListener('change',e=>{const f=FM[e.target.closest('.f')?.dataset.k];if(f&&e.target.type=='number')setv(f.k,+e.target.value)});
+box.addEventListener('click',e=>{if(e.target.closest('#adv-open'))return setAdv(true);if(e.target.closest('#adv-back'))return setAdv(false);const lb=e.target.closest('.lg');if(lb){const n=+lb.dataset.n;S.hide.has(n)?S.hide.delete(n):S.hide.add(n);update();return}const b=e.target.closest('button');if(!b||b.closest('.dd'))return;const fe=b.closest('.f');if(!fe)return;const f=FM[fe.dataset.k];
+ if(b.dataset.d)setv(f.k,+(S[f.k]+ +b.dataset.d*f.st).toFixed(2));
+ else if(f.t=='c')setv(f.k,b.dataset.v);
+ else if(f.t=='s')setv(f.k,!S[f.k]);
+ else if(b.dataset.a=='imp')$('#dsmfile').click();
+ else if(b.dataset.a=='net'){S.dsm='SRTM 30 m (diunduh, simulasi)';update()}
+ else if(b.dataset.a=='start'){if(S.start){S.start=null;placeStart();update()}else{S.picking=true;toast('Tap peta untuk menentukan titik start');sync()}}});
+$('#dsmfile').onchange=e=>{if(e.target.files[0]){S.dsm=e.target.files[0].name;update()}};
+$('#export').onclick=()=>{if(!lastPlan)return;const alt=S.alt,c=a=>a.map(p=>{const l=fromM(p);return l.lng.toFixed(7)+','+l.lat.toFixed(7)+','+alt.toFixed(1)}).join(' ');
+ const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${$('#rname').value}</name><Placemark><name>Ortho route</name><LineString><altitudeMode>${AGL()?'relativeToGround':S.altMode.startsWith('ASL')?'absolute':'relativeToGround'}</altitudeMode><coordinates>${c(lastPlan.po)}</coordinates></LineString></Placemark>${lastPlan.pb.length?`<Placemark><name>Oblique route</name><LineString><coordinates>${c(lastPlan.pb)}</coordinates></LineString></Placemark>`:''}</Document></kml>`;
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([kml],{type:'application/vnd.google-earth.kml+xml'}));a.download=($('#rname').value||'route')+'.kml';a.click();toast('KML diekspor')};
+const ab=$('#about'),tgl=v=>{ab.classList.toggle('open',v);ab.setAttribute('aria-hidden',!v)};
+$('#info').onclick=()=>tgl(true);$('#x').onclick=()=>tgl(false);ab.addEventListener('pointerdown',e=>{if(e.target===ab)tgl(false)});addEventListener('keydown',e=>{if(e.key=='Escape')tgl(false)});
+build();links();sync();go('menu');
+</script></body></html>
