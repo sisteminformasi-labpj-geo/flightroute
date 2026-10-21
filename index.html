@@ -53,7 +53,7 @@ summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
 .pin{background:var(--ok);color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;font-weight:700;font-size:13px;border:2px solid #fff}
 #toast{position:absolute;z-index:2000;bottom:24px;left:64px;transform:translateY(120px);padding:10px 16px;border-radius:14px;transition:transform .28s cubic-bezier(.23,1,.32,1);max-width:90vw}
 #toast.show{transform:none}
-@media(max-width:760px){#panel{left:8px;right:8px;width:auto;top:auto;height:56vh;bottom:8px}#bar{left:8px;top:8px}#hud{left:8px;right:8px;top:8px}#toast{left:8px;bottom:calc(56vh + 16px)}}
+@media(max-width:760px){#panel{left:8px;right:8px;width:auto;top:auto;height:56vh;bottom:8px}#bar{left:8px;top:62px}#hud{left:8px;top:62px}#warn{top:132px!important;left:8px!important}#tools{left:8px!important}#search{right:8px!important;top:8px!important}#search.open{width:calc(100vw - 16px)!important}#toast{left:8px;bottom:calc(56vh + 16px)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media(prefers-reduced-transparency:reduce){.glass{background:#1b1d23;backdrop-filter:none}}
 .item,.seg button,.nr input{min-height:40px}.btn{border-radius:12px;min-height:44px}.item{border-radius:12px}
@@ -67,7 +67,7 @@ summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
 .lg{display:grid;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;width:100%;min-height:40px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.07);margin-bottom:6px;text-align:left;transition:opacity .16s cubic-bezier(.23,1,.32,1)}
 .lg i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 system-ui;color:#fff}.lg.off{opacity:.4}
 .pn{width:20px;height:20px;border-radius:50%;color:#fff;font:700 11px/16px system-ui;text-align:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-#hud{position:absolute;z-index:1000;left:16px;top:16px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:20px;padding:12px 18px;border-radius:18px;background:var(--bg);border:1px solid var(--ln);border-top-color:rgba(255,255,255,.22)}
+
 #hud[hidden]{display:none}#hud b{white-space:nowrap}
 .dd{position:relative}.ddb{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:40px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--ln);text-align:left}
 .ddb i{font-style:normal;color:var(--mu);transition:transform .16s cubic-bezier(.23,1,.32,1)}.dd.open .ddb i{transform:rotate(180deg)}
@@ -80,16 +80,53 @@ summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
 #adv-open{margin-top:12px}
 [hidden]{display:none!important}
 #info{position:absolute;z-index:1000;left:16px;bottom:100px;width:36px;height:36px;border-radius:50%;font:italic 700 17px/1 Georgia,serif;color:var(--tx)}
-#about{position:absolute;inset:0;z-index:3000;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:opacity .2s cubic-bezier(.23,1,.32,1),visibility 0s .2s}
-#about.open{opacity:1;visibility:visible;transition-delay:0s}
+#about,#confirm{position:absolute;inset:0;z-index:3000;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:opacity .2s cubic-bezier(.23,1,.32,1),visibility 0s .2s}
+#about.open,#confirm.open{opacity:1;visibility:visible;transition-delay:0s}
 #about .card{position:relative;width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:28px 24px 22px;border-radius:22px;background:rgba(30,33,40,.9);transform:scale(.96);transition:transform .2s cubic-bezier(.23,1,.32,1)}
-#about.open .card{transform:none}
+#about.open .card,#confirm.open .card{transform:none}
 #about h2{margin:0 0 8px;font-size:24px;letter-spacing:-.02em;line-height:1.15}#about h3{margin:20px 0 8px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
 #about p{margin:0 0 12px;font-size:14px;color:#d6d9df}#about small{color:var(--mu);font-size:12px}
 #about ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:6px}
 #about li{display:grid;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.07)}#about li span{font-size:12px;color:var(--mu)}
 #x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);font-size:20px;line-height:1}
 @media(max-width:760px){#info{bottom:calc(56vh + 20px)}}
+#hud{position:absolute;z-index:1000;left:16px;top:16px;display:flex;align-items:center;gap:10px}
+#hud .disk{width:40px;height:40px;border-radius:50%;background:var(--dk,#fff);display:grid;place-items:center}
+#hud .hb{display:flex;gap:22px;padding:7px 16px;border-radius:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+#hud .hb div{display:grid;justify-items:start}#hud span{font-size:11px;color:#fff}#hud b{font-size:15px;font-variant-numeric:tabular-nums}
+#tools{position:absolute;z-index:1000;left:16px;top:50%;transform:translateY(-50%);display:grid;gap:10px}
+#tools button{width:44px;height:44px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+#bback{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);font-size:22px;line-height:1}
+#warn{position:absolute;z-index:1000;left:16px;top:86px;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;background:#ff3b30;color:#fff;font-weight:600;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+#confirm .card{background:#fff;color:#111;border-radius:16px;width:min(300px,100%);overflow:hidden;text-align:center;transform:scale(.96);transition:transform .2s cubic-bezier(.23,1,.32,1)}
+#confirm h4{margin:0;padding:26px 20px 22px;font-size:17px;font-weight:600}
+.cb{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #e5e5ea}.cb button{min-height:50px;background:none;color:#111;font-size:16px}.cb button+button{border-left:1px solid #e5e5ea;font-weight:700}
+#search{position:absolute;z-index:1100;top:16px;right:16px;width:372px;height:44px;border-radius:14px;display:flex;align-items:center}
+#q{flex:1;min-width:0;height:100%;background:none;border:0;color:var(--tx);font:inherit;padding:0 14px;outline:0}#qb{width:44px;height:44px;background:none}
+#sres{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:4px;border-radius:14px;background:#262a33;border:1px solid var(--ln);box-shadow:0 12px 32px rgba(0,0,0,.45)}
+#sres button{display:block;width:100%;min-height:40px;padding:8px 10px;border-radius:9px;background:none;text-align:left;font-size:13px}
+@media(hover:hover) and (pointer:fine){#sres button:hover{background:rgba(255,255,255,.08)}}
+.el{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;padding:2px 7px;border-radius:8px;background:rgba(0,0,0,.6);color:#fff;font:600 12px system-ui}
+.pl{width:22px;height:22px;border-radius:50%;background:#8e8e93;color:#fff;text-align:center;font:600 17px/21px system-ui;border:1.5px solid #fff;cursor:pointer}
+.chip{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:8px;border:1px solid var(--ac);background:rgba(45,140,255,.16);color:#4da3ff;font-weight:600;font-size:13px}
+#ptitle{font-size:21px;font-weight:400}#ptitle b{font-weight:700}#sens{color:#fff}#sens b{font-weight:700}.ddb .ph{color:var(--mu)}
+#search{width:44px;background:#fff;border:0;box-shadow:0 4px 14px rgba(0,0,0,.35);color:#111;transition:width .28s cubic-bezier(.23,1,.32,1)}
+#search.open{width:min(372px,calc(100vw - 32px))}
+#qb{flex:none;width:44px;height:44px;background:none;display:grid;place-items:center}
+#q{color:#111;opacity:0;pointer-events:none;padding:0 4px;transition:opacity .15s ease-out}#q::placeholder{color:#1c1c1e;opacity:.7}
+#qcancel{flex:none;height:44px;padding:0 14px;background:none;color:#007aff;font-size:15px;opacity:0;pointer-events:none;transition:opacity .15s ease-out}
+#search.open #q,#search.open #qcancel{opacity:1;pointer-events:auto}
+#sres{background:#fff;color:#111;border-color:#e5e5ea}
+@media(hover:hover) and (pointer:fine){#sres button:hover{background:#f2f2f7}}
+#hud .disk:disabled{--dk:#c7c7cc;opacity:1;cursor:default}
+#bar{padding:0;gap:10px;border-radius:0}
+#ok{width:40px;height:40px;border-radius:50%;background:#2d8cff;display:grid;place-items:center}
+#bback{width:40px;height:40px;background:rgba(0,0,0,.5)}
+#bar .lb{padding:9px 14px;border-radius:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);color:#fff;font-size:15px;font-variant-numeric:tabular-nums}
+#bar{padding:5px 14px 5px 5px;gap:10px;border-radius:12px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#bar .lb{padding:0;background:none;backdrop-filter:none;border-radius:0}
+#bback{background:rgba(255,255,255,.14)}
+#ok:disabled{opacity:1;filter:saturate(.35) brightness(.9)}
 </style></head><body>
 <div id="map"></div>
 <aside id="panel" class="glass">
@@ -99,21 +136,23 @@ summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
   <button class="item" disabled>Linear Route <small>Belum ada pengembangan</small></button>
   <button class="item" disabled>Slope Route <small>Belum ada pengembangan</small></button>
   <button class="item" disabled>Geometric Route <small>Belum ada pengembangan</small></button></div></section>
- <section class="step" id="s-draw" hidden><div class="hd"><h1>Draw Area</h1><p>Tap the satellite map to add corners, drag a corner to adjust. Press the green check when done.</p></div>
-  <div class="sc"><button class="item" id="undo">Undo last corner</button><button class="item" id="clear">Clear</button><button class="ghost" id="draw-back">‹ Back</button></div></section>
- <section class="step" id="s-sensor" hidden><div class="hd"><h1>Sensor</h1><p id="area-sum"></p></div><div class="sc">
+  <section class="step" id="s-sensor" hidden><div class="hd"><h1 id="ptitle">Select payload for task</h1></div><div class="sc">
   <div class="lbl">Select Aircraft Model</div><div class="dd" id="dd-air"></div>
-  <div class="lbl">Select Camera Model</div><div class="dd" id="dd-cam"></div>
-  <div class="lbl">Select Lens (one or both)</div><div class="seg" id="sg-lens"><button data-v="RGB" class="on">RGB</button><button data-v="MS" disabled>MS</button></div></div>
-  <div class="ft"><button class="btn sec" id="sensor-back">Back</button><button class="btn" id="sensor-ok">OK</button></div></section>
+  <div id="g-cam" hidden><div class="lbl">Select Camera Model</div><div class="dd" id="dd-cam"></div></div>
+  <div id="g-lens" hidden><div class="lbl">Select Lens</div><div class="dd" id="dd-lens"></div></div></div>
+  <div class="ft"><button class="btn sec" id="sensor-back">Back</button><button class="btn" id="sensor-ok" disabled>OK</button></div></section>
  <section class="step" id="s-cfg" hidden>
   <div class="hd"><input class="name" id="rname" value="Area Route 1" aria-label="Route name"><p id="sens"></p>
    <div class="seg" style="margin-top:12px" id="sg-mode"><button data-v="o" class="on">Ortho Collection</button><button data-v="b">Oblique Collection</button></div></div>
   <div class="sc" id="fields"></div>
-  <div class="ft"><button class="btn sec" id="cfg-back">Sensor</button><button class="btn" id="export">Export KML</button></div></section>
+  <div class="ft"><button class="btn sec" id="cfg-back">Back</button><button class="btn" id="home">Back to home</button></div></section>
 </aside>
-<div id="bar" class="glass" hidden><button id="ok" disabled aria-label="Finish area">✓</button><span>Mapping area <b id="ha">0.0</b> ha</span></div>
-<div class="stats glass" id="hud" hidden><div><b id="st-area">–</b><span>Area (ha)</span></div><div><b id="st-photo">–</b><span>Photos</span></div><div><b id="st-dist">–</b><span>Distance</span></div><div><b id="st-time">–</b><span>Time</span></div></div>
+<div id="bar" hidden><button id="bback" aria-label="Back">‹</button><button id="ok" disabled aria-label="Finish area"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><span class="lb">Mapping area <b id="ha">0.00</b> ha</span></div>
+<div id="hud" hidden><button class="disk" id="hdisk" disabled aria-label="Export KML"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M5 3h11l4 4v12a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" fill="#111"/><rect x="7" y="3" width="8" height="5" style="fill:var(--dk,#fff)"/><rect x="7" y="13" width="10" height="8" rx="1" style="fill:var(--dk,#fff)"/></svg></button><div class="hb"><div><span>Mapping Area</span><b id="st-area">0.0 ha</b></div><div><span>Est. Duration</span><b id="st-time">0m 0s</b></div><div><span>Est. Storage</span><b id="st-photo">0</b></div></div></div>
+<div id="tools" hidden><button id="tclear" aria-label="Delete all waypoints"><svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#111"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button><button id="tundo" aria-label="Undo last corner"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10.5 11v6M13.5 11v6"/></svg></button></div>
+<div id="warn" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L22 20H2z"/><path d="M12 10v5M12 17.6v.01"/></svg>Intersected area unavailable for mapping</div>
+<div id="confirm" aria-hidden="true"><div class="card" role="alertdialog" aria-label="Delete all waypoints"><h4>Delete all waypoints?</h4><div class="cb"><button id="cc">Cancel</button><button id="cx">Clear</button></div></div></div>
+<div id="search" hidden><button id="qb" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button><input id="q" placeholder="Search location, target point, line, a..." aria-label="Search map" autocomplete="off"><button id="qcancel">Cancel</button><div id="sres" hidden></div></div>
 <button id="info" class="glass" aria-label="Informasi">i</button>
 <div id="about" aria-hidden="true"><div class="card glass" role="dialog" aria-label="Informasi aplikasi"><button id="x" aria-label="Tutup">×</button>
 <h2>Flight Route by Remote Sensing Laboratory UGM</h2><p>Platform digital yang dirancang sebagai sarana pembelajaran untuk memahami dan merancang rute penerbangan drone guna mendukung kegiatan survei, pemetaan, dan akuisisi data penginderaan jauh.</p>
@@ -126,26 +165,28 @@ summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const $=s=>document.querySelector(s),R=Math.PI/180,RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const map=L.map('map',{zoomControl:false,doubleClickZoom:false}).setView([-7.7956,110.3695],17);
+const map=L.map('map',{zoomControl:false,doubleClickZoom:false}).setView([-7.765358809040815,110.37744271573315],18);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri World Imagery'}).addTo(map);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:.8}).addTo(map);
 L.control.zoom({position:'bottomleft'}).addTo(map);
-const LENS={RGB:{k:12.29/0.00328,rw:1.409,rh:1.056,mi:0.7},MS:{k:4.34/0.0025,rw:1.49,rh:1.12,mi:1.0}};
-const S={step:'menu',pts:[],cam:'M3E',lenses:['RGB'],mode:'o',gsd:2,obPitch:-60,altMode:'Relative to Takeoff Point (ALT)',rtf:false,dsm:'',alt:75,tfa:75,elev:false,safe:30,speed:8,course:71,done:'Return To Home',
+/* Dikalibrasi dengan data RC. k = tinggi(m) per 1 cm GSD x100 (H = GSD x k/100). MS: piksel 2,0 um, f 4,34 mm -> H = 21,68 m per cm GSD. Wide/RGB: H = 36,5 m per cm GSD. rw/rh = lebar/tinggi footprint per meter tinggi. */
+const LENS={RGB:{k:3650,rw:1.409,rh:1.056,mi:0.7},MS:{k:2168,rw:1.194,rh:0.896,mi:1.0}};
+const S={step:'menu',pts:[],ids:[],hist:[],air:null,cam:null,lenses:[],mode:'o',gsd:2,obPitch:-60,altMode:'Relative to Takeoff Point (ALT)',rtf:false,dsm:'',alt:75,tfa:75,elev:false,safe:30,speed:8,course:71,done:'Return To Home',
  tgt:0,side:70,front:80,sideO:70,frontO:80,margin:0,photo:'Timed Interval Shot',cca:false,rot:'Along the Route',yaw:0,pm:'Defined',pitch:-90,start:null,smart:false,hide:new Set(),picking:false,toSpd:15,sep:false,obSpd:12};
-const kmin=()=>Math.min(...S.lenses.map(l=>LENS[l].k));
+LENS.WIDE=LENS.RGB;const ORD=['WIDE','RGB','MS'];
+const kmin=()=>S.lenses.length?Math.min(...S.lenses.map(l=>LENS[l].k)):LENS.WIDE.k;
 const sinP=()=>Math.sin(Math.abs(S.obPitch)*R);
 const W=()=>S.mode=='o',B=()=>S.mode=='b',AGL=()=>S.altMode=='AGL';
 const FIELDS=[
 {k:'smart',t:'s',l:'Smart Oblique',w:B,note:'On: only 2 flight routes (Top to Bottom, Left to Right), each extended 1/5 beyond the AOI.'},
-{k:'gsd',t:'n',l:'Ortho GSD',u:'cm/px',min:.05,max:30,st:.01},
+{k:'gsd',t:'n',l:'Ortho GSD',u:'cm/px',min:.1,max:30,st:.1},
 {k:'obPitch',t:'n',l:'Gimbal Pitch (Oblique)',u:'°',min:-85,max:-40,st:1,w:B},
-{k:'obGsd',t:'n',l:'Oblique GSD',u:'cm/px',min:.05,max:60,st:.01,w:B},
+{k:'obGsd',t:'n',l:'Oblique GSD',u:'cm/px',min:.1,max:60,st:.1,w:B},
 {k:'altMode',t:'c',l:'Altitude Mode',o:['Relative to Takeoff Point (ALT)','ASL (EGM96)','AGL']},
 {k:'rtf',t:'s',l:'Real-Time Follow',w:AGL},
 {k:'dsm',t:'d',l:'DSM File',w:AGL},
-{k:'tfa',t:'n',l:'Terrain Follow Altitude',u:'m',min:25,max:1500,st:1,w:AGL},
-{k:'alt',t:'n',l:'Route Altitude',u:'m',min:12,max:1500,st:1,w:()=>!AGL()},
+{k:'tfa',t:'n',l:'Terrain Follow Altitude',u:'m',min:25,max:1500,st:.1,w:AGL,note:'Batas maks. peraturan pemerintah: 120 m.'},
+{k:'alt',t:'n',l:'Route Altitude',u:'m',min:12,max:1500,st:.1,w:()=>!AGL(),note:'Batas maks. peraturan pemerintah: 120 m.'},
 {k:'elev',t:'s',l:'Elevation Optimization',w:W,note:'When enabled, aircraft will fly to center of mapping area after completing flight route and capture a series of tilt-angle photos to increase elevation accuracy.'},
 {k:'safe',t:'n',l:'Safe Takeoff Altitude',u:'m',min:2,max:1500,st:1},
 {k:'speed',t:'n',l:'Speed',u:'m/s',min:.1,max:9.97,st:.1},
@@ -169,9 +210,10 @@ const FIELDS=[
 {k:'sep',t:'s',l:'Set Oblique Route Speed Separately',w:B},
 {k:'obSpd',t:'n',l:'Speed (Oblique)',u:'m/s',min:1,max:12,st:1,w:()=>B()&&S.sep}];
 const FM={};FIELDS.forEach(f=>f.k&&(FM[f.k]=f));
+const dur=sc=>{const h=Math.floor(sc/3600),m=Math.floor(sc%3600/60);return(h?h+'h ':'')+m+'m '+sc%60+'s'};
 const fmt=(v,st)=>(+v).toFixed(st<1?(st<.1?2:1):0);
 function dd(el,opts,get,pick){el.innerHTML=`<button class="ddb" aria-haspopup="listbox"><span></span><i>▾</i></button><div class="ddl" role="listbox">${opts.map(o=>`<button data-v="${o}" role="option"><span>${o}</span><b>✓</b></button>`).join('')}</div>`;
- const r=()=>{el.querySelector('.ddb span').textContent=get();el.querySelectorAll('.ddl button').forEach(b=>b.classList.toggle('on',b.dataset.v==get()))};
+ const r=()=>{{const sp=el.querySelector('.ddb span'),v=get();sp.textContent=v||'Select';sp.classList.toggle('ph',!v)}el.querySelectorAll('.ddl button').forEach(b=>b.classList.toggle('on',b.dataset.v==get()))};
  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.classList.contains('ddb'))el.classList.toggle('open');else{el.classList.remove('open');pick(b.dataset.v);r()}});r();return r}
 function setAdv(v){S.adv=v;$('#fbasic').hidden=v;$('#adv-open').hidden=v;$('#fadv').hidden=!v;$('#s-cfg .hd').hidden=v;$('#fields').scrollTop=0;
  if(!RM)(v?$('#fadv'):$('#fbasic')).animate([{opacity:0,transform:'translateX('+(v?'':'-')+'14px)'},{opacity:1,transform:'none'}],{duration:220,easing:'cubic-bezier(.23,1,.32,1)'})}
@@ -192,7 +234,7 @@ function setv(k,v){const f=FM[k];if(typeof v=='number'){if(isNaN(v))return;v=Mat
  if(k=='obGsd')S.gsd=S.obGsd*sinP();
  if(k=='tfa')S.alt=v;
  if(k=='alt')S.alt=v;
- if(k=='gsd'||k=='obGsd')S.alt=S.gsd/100*kmin();
+ if(k=='gsd'||k=='obGsd')S.alt=Math.round(S.gsd/100*kmin()*10)/10;
  if(k=='altMode'&&AGL())S.alt=Math.max(25,S.alt);
  links(k);update()}
 function links(k){S.alt=Math.min(1500,Math.max(AGL()?25:12,S.alt));
@@ -228,60 +270,75 @@ function spacing(){const H=S.alt,sl=H/sinP();let lo=1e9,po=1e9,lb=1e9,pb=1e9;
   lb=Math.min(lb,sl*L_.rw*(1-S.sideO/100));pb=Math.min(pb,sl*L_.rh*(1-S.frontO/100))}
  return{lo,po,lb,pb}}
 /* map layers */
-const lg=L.layerGroup().addTo(map),poly=L.polygon([],{color:'#2d8cff',weight:2,fillOpacity:.18}).addTo(map),mk=[];let startMk=null,lastPlan=null;
-const vtx=i=>L.marker(S.pts[i],{draggable:true,icon:L.divIcon({className:'vtx',iconSize:[18,18]})});
-function redrawPoly(){poly.setLatLngs(S.pts);const ha=S.pts.length>2?(lat0=S.pts[0].lat,lng0=S.pts[0].lng,mx=111320*Math.cos(lat0*R),my=110574,area(S.pts.map(toM))/1e4):0;
- $('#ha').textContent=ha.toFixed(1);$('#ok').disabled=S.pts.length<3;return ha}
-function addPt(ll){S.pts.push(ll);const i=S.pts.length-1,m=vtx(i).addTo(map);m.on('drag',e=>{S.pts[mk.indexOf(m)]=e.target.getLatLng();redrawPoly();update()});mk.push(m);redrawPoly()}
-function clearPts(){mk.forEach(m=>m.remove());mk.length=0;S.pts=[];redrawPoly();lg.clearLayers()}
+const lg=L.layerGroup().addTo(map),vg=L.layerGroup().addTo(map),deco=L.layerGroup().addTo(map),poly=L.polygon([],{color:'#2d8cff',weight:2,fillOpacity:.18}).addTo(map);let startMk=null,lastPlan=null;
+const segX=(a,b,c,d)=>{const o=(p,q,r)=>Math.sign((q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]));return o(a,b,c)!=o(a,b,d)&&o(c,d,a)!=o(c,d,b)};
+function inter(){const n=S.pts.length;if(n<4)return false;const P=S.pts.map(p=>[p.lng,p.lat]);for(let i=0;i<n;i++)for(let j=i+2;j<n;j++){if(i==0&&j==n-1)continue;if(segX(P[i],P[(i+1)%n],P[j],P[(j+1)%n]))return true}return false}
+function decor(){deco.clearLayers();const n=S.pts.length;if(n<2)return;
+ const cp=map.latLngToLayerPoint(L.latLng(S.pts.reduce((a,p)=>a+p.lat,0)/n,S.pts.reduce((a,p)=>a+p.lng,0)/n));
+ for(let i=0;i<(n==2?1:n);i++){const a=S.pts[i],b=S.pts[(i+1)%n],pa=map.latLngToLayerPoint(a),pb=map.latLngToLayerPoint(b),mid=pa.add(pb).divideBy(2),len=pa.distanceTo(pb);
+  let nx=-(pb.y-pa.y),ny=pb.x-pa.x;const l=Math.hypot(nx,ny)||1;nx/=l;ny/=l;if((mid.x-cp.x)*nx+(mid.y-cp.y)*ny<0){nx=-nx;ny=-ny}
+  L.marker(map.layerPointToLatLng(L.point(mid.x+nx*22,mid.y+ny*22)),{interactive:false,icon:L.divIcon({className:'',html:'<div class="el">'+map.distance(a,b).toFixed(1)+'m</div>',iconSize:[0,0]})}).addTo(deco);
+  if(len>46){const ml=map.layerPointToLatLng(mid);L.marker(ml,{icon:L.divIcon({className:'',html:'<div class="pl">+</div>',iconSize:[22,22],iconAnchor:[11,11]})}).addTo(deco).on('click',()=>{S.pts.splice(i+1,0,ml);S.ids.splice(i+1,0,++uid);S.hist.push(uid);verts();update()})}}}
+function redrawPoly(){poly.setLatLngs(S.pts);S.bad=inter();const c=S.bad?'#ff453a':'#2d8cff';poly.setStyle({color:c,fillColor:c});
+ let ha=0;if(S.pts.length>2){lat0=S.pts[0].lat;lng0=S.pts[0].lng;mx=111320*Math.cos(lat0*R);my=110574;ha=area(S.pts.map(toM))/1e4}
+ $('#ha').textContent=ha.toFixed(2);$('#st-area').textContent=ha.toFixed(1)+' ha';$('#ok').disabled=S.pts.length<3||S.bad;$('#sensor-ok').disabled=S.bad||!(S.air&&S.cam&&S.lenses.length);$('#warn').hidden=!S.bad;decor();return ha}
+function verts(){vg.clearLayers();S.pts.forEach((p,i)=>L.marker(p,{draggable:true,icon:L.divIcon({className:'vtx',iconSize:[18,18]})}).addTo(vg).on('drag',e=>{S.pts[i]=e.target.getLatLng();redrawPoly();update()}));redrawPoly()}
+let uid=0;
+function addPt(ll){S.pts.push(ll);S.ids.push(++uid);S.hist.push(uid);verts()}
+function clearPts(){S.pts=[];S.ids=[];S.hist=[];verts();lg.clearLayers()}
+function undoPt(){if(!S.hist.length)return;const ix=S.ids.indexOf(S.hist.pop());S.pts.splice(ix,1);S.ids.splice(ix,1);verts();lg.clearLayers();if(S.step!='draw'&&S.pts.length<3)go('draw');else update()}
+map.on('zoomend',decor);
 map.on('click',e=>{if(S.picking){S.start=e.latlng;S.picking=false;placeStart();sync();update();return}
  if(S.step=='draw')addPt(e.latlng)});
 function placeStart(){startMk&&startMk.remove();startMk=null;if(S.start)startMk=L.marker(S.start,{icon:L.divIcon({className:'',html:'<div class="pin">S</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map)}
 /* planner */
+/* Elevation Optimization, hasil kalibrasi data RC: ~7 foto miring di tengah AOI, ~11 dtk per foto (gimbal + jepret), terbang ke tengah dengan Takeoff Speed */
+const EO_PHOTOS=7,EO_SEC=11;
 const OUT=0.2;/* share of AOI length flown beyond each end of the oblique passes 4-5 and Smart Oblique */
 const PASS=[{n:2,l:'Left → Right',a:90,o:0,c:'#0a84ff'},{n:3,l:'Top → Bottom',a:180,o:0,c:'#bf5af2'},{n:4,l:'Right → Left',a:270,o:OUT,c:'#ff9f0a'},{n:5,l:'Bottom → Top',a:0,o:OUT,c:'#ff453a'}];
 const SMART=[{n:1,l:'Top → Bottom',a:180,o:OUT,c:'#bf5af2'},{n:2,l:'Left → Right',a:90,o:OUT,c:'#0a84ff'}];
 const pin=(p,n,c)=>L.marker(fromM(p),{interactive:false,icon:L.divIcon({className:'',html:`<div class="pn" style="background:${c}">${n}</div>`,iconSize:[20,20],iconAnchor:[10,10]})}).addTo(lg);
 function legend(items){const e=$('#legend');e.hidden=!items.length;e.innerHTML=items.map(p=>`<button class="lg${S.hide.has(p.n)?' off':''}" data-n="${p.n}"><i style="background:${p.c}">${p.n}</i><span>${p.l}</span><span style="color:var(--mu)">${S.hide.has(p.n)?'○':'●'}</span></button>`).join('')}
 function update(){if(S.step!='cfg'||S.pts.length<3)return;links();
- const ha=redrawPoly(),P=S.pts.map(toM),sp=spacing(),vm=vmax();
+ const ha=redrawPoly();if(S.bad){lg.clearLayers();legend([]);return}const P=S.pts.map(toM),sp=spacing(),vm=vmax();
  if(S.speed>vm.o){S.speed=+vm.o.toFixed(1);toast('Speed dibatasi '+S.speed+' m/s agar interval foto tidak terlalu cepat')}
  if(S.obSpd>vm.b)S.obSpd=Math.floor(vm.b);
  const sm=B()&&S.smart,ortho=sm?[]:grid(P,S.course,sp.lo,S.margin);
  const passes=B()?(sm?SMART:PASS).map(p=>({...p,ls:grid(P,S.course+p.a,sp.lb,S.margin,p.o)})):[];
  let po=ortho.flat();if(S.start&&po.length){const s=toM(S.start);if(dist(po[po.length-1],s)<dist(po[0],s))po.reverse()}
  const path=a=>a.reduce((s,p,i)=>s+(i?dist(a[i-1],p):0),0),ph=(ls,q)=>ls.reduce((a,l)=>a+Math.ceil(dist(l[0],l[1])/q)+1,0);
- const vB=B()&&S.sep?S.obSpd:S.speed;let dO=path(po),dB=0,photos=ph(ortho,sp.po),t=dO/S.speed+ortho.length*3+S.safe/S.toSpd;
- passes.forEach(p=>{p.pts=p.ls.flat();const d=path(p.pts);dB+=d;t+=d/vB+p.ls.length*3;photos+=ph(p.ls,sp.pb)});
+ const vB=B()&&S.sep?S.obSpd:S.speed;let dO=path(po),dB=0,photos=ph(ortho,sp.po),t=dO/S.speed;
+ passes.forEach(p=>{p.pts=p.ls.flat();const d=path(p.pts);dB+=d;t+=d/vB;photos+=ph(p.ls,sp.pb)});
  lg.clearLayers();
  if(po.length&&!(B()&&S.hide.has(1))){L.polyline(po.map(fromM),{color:'#30d158',weight:3}).addTo(lg);po.forEach((p,i)=>(i%2==0||i==po.length-1)&&L.circleMarker(fromM(p),{radius:3,color:'#fff',weight:1,fillColor:'#30d158',fillOpacity:1}).addTo(lg));if(B())pin(po[0],1,'#30d158')}
  passes.forEach(p=>{if(S.hide.has(p.n))return;L.polyline(p.pts.map(fromM),{color:p.c,weight:2.5}).addTo(lg);pin(p.pts[0],p.n,p.c)});
  let ep=[];
- if(S.elev&&W()&&po.length){const c=P.reduce((a,p)=>[a[0]+p[0]/P.length,a[1]+p[1]/P.length],[0,0]),last=po[po.length-1],dE=dist(last,c);ep=[last,c];dO+=dE;photos+=12;t+=dE/S.speed+24;
-  L.circleMarker(fromM(c),{radius:7,color:'#fff',weight:2,fillColor:'#ffd60a',fillOpacity:1}).addTo(lg).bindTooltip('Elevation optimization: 12 tilt photos aimed at center')}
+ if(S.elev&&W()&&po.length){const c=P.reduce((a,p)=>[a[0]+p[0]/P.length,a[1]+p[1]/P.length],[0,0]),last=po[po.length-1],dE=dist(last,c);ep=[last,c];photos+=EO_PHOTOS;t+=dE/S.toSpd+EO_PHOTOS*EO_SEC;
+  L.circleMarker(fromM(c),{radius:7,color:'#fff',weight:2,fillColor:'#ffd60a',fillOpacity:1}).addTo(lg).bindTooltip('Elevation optimization: '+EO_PHOTOS+' tilt photos aimed at center')}
  lastPlan={po:po.concat(ep.slice(1)),pb:passes.flatMap(p=>p.pts)};
  legend(B()?[...(sm?[]:[{n:1,l:'Ortho nadir',c:'#30d158'}]),...passes]:[]);
- $('#st-area').textContent=ha.toFixed(2);$('#st-photo').textContent=photos;$('#st-dist').textContent=((dO+dB)/1000).toFixed(2)+' km';
- const mnt=Math.ceil(t/60);$('#st-time').textContent=mnt+' min'+(mnt>25?' · '+Math.ceil(mnt/25)+' bat':'');
+ $('#st-area').textContent=ha.toFixed(1)+' ha';$('#st-photo').textContent=photos;const sc=Math.round(t);$('#st-time').textContent=dur(sc);
  sync()}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}
 /* navigation */
-function go(s){const prev=$('.step:not([hidden])'),next=$('#s-'+s);S.step=s;if(s!='cfg'&&S.adv)setAdv(false);if(prev&&prev!==next)prev.hidden=true;next.hidden=false;
- $('#bar').hidden=s!='draw';$('#hud').hidden=s!='cfg';
- if(!RM)next.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.23,1,.32,1)'})}
+function go(s){const prev=$('.step:not([hidden])'),next=$('#s-'+s);S.step=s;if(s!='cfg'&&S.adv)setAdv(false);if(prev&&prev!==next)prev.hidden=true;if(next)next.hidden=false;
+ $('#panel').hidden=s=='draw';$('#bar').hidden=s!='draw';$('#hud').hidden=!(s=='sensor'||s=='cfg');$('#hdisk').disabled=s!='cfg';{const sh=!(s=='draw'&&!S.searchDone);$('#search').hidden=sh;if(sh)$('#search').classList.remove('open')}$('#tools').hidden=s=='menu';
+ if(next&&!RM)next.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.23,1,.32,1)'})}
 function seg(id,fn){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled)fn(b)})}
 $('#go-area').onclick=()=>go('draw');
-$('#draw-back').onclick=()=>{clearPts();go('menu')};
-$('#undo').onclick=()=>{const m=mk.pop();if(m){m.remove();S.pts.pop();redrawPoly()}};
-$('#clear').onclick=clearPts;
-$('#ok').onclick=()=>{const ha=redrawPoly();$('#area-sum').textContent='Mapping area '+ha.toFixed(1)+' ha';map.fitBounds(poly.getBounds(),{paddingTopRight:[400,110],maxZoom:18});go('sensor')};
-let air='Mavic M3E Series';dd($('#dd-air'),['Mavic M3E Series'],()=>air,v=>air=v);
-dd($('#dd-cam'),['M3E','M3M'],()=>S.cam,v=>{S.cam=v;const ms=$('#sg-lens [data-v=MS]');ms.disabled=v!='M3M';if(v!='M3M'){S.lenses=['RGB'];$('#sg-lens [data-v=RGB]').classList.add('on');ms.classList.remove('on')}});
+$('#bback').onclick=()=>{clearPts();go('menu')};
+$('#ok').onclick=()=>{const ha=redrawPoly();S.searchDone=true;$('#st-time').textContent='0m 0s';$('#st-photo').textContent='0';sens();map.fitBounds(poly.getBounds(),{paddingTopRight:[400,110],maxZoom:18});go('sensor')};
+function ddm(el,opts,sel,tog){const r=()=>{const o=opts(),a=sel();el.innerHTML=`<button class="ddb"><span class="${a.length?'':'ph'}">${a.join('+')||'Select'}</span><i>▾</i></button><div class="ddl">${o.map(x=>`<button data-v="${x}" class="${a.includes(x)?'on':''}"><span>${x}</span><b>✓</b></button>`).join('')}</div>`};
+ el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.classList.contains('ddb'))el.classList.toggle('open');else{const op=el.classList.contains('open');tog(b.dataset.v);r();el.classList.toggle('open',op)}});r();return r}
+const rAir=dd($('#dd-air'),['Mavic M3E Series'],()=>S.air,v=>{S.air=v;S.cam=null;S.lenses=[];sens()});
+const rCam=dd($('#dd-cam'),['M3E','M3M'],()=>S.cam,v=>{S.cam=v;S.lenses=[];sens()});
+const rLens=ddm($('#dd-lens'),()=>S.cam=='M3M'?['RGB','MS']:['WIDE'],()=>S.lenses,v=>{S.lenses=(S.lenses.includes(v)?S.lenses.filter(x=>x!=v):[...S.lenses,v]).sort((a,b)=>ORD.indexOf(a)-ORD.indexOf(b));sens()});
+function payload(){const ok=S.air&&S.cam&&S.lenses.length,h=ok?`<b>${S.air.replace('Mavic ','')} ${S.cam}</b><span class="chip">${S.lenses.join('+')}</span>`:'Select payload for task';$('#ptitle').innerHTML=h;$('#sens').innerHTML=ok?h:''}
+function sens(){$('#g-cam').hidden=!S.air;$('#g-lens').hidden=!S.cam;rAir();rCam();rLens();payload();$('#sensor-ok').disabled=S.bad||!(S.air&&S.cam&&S.lenses.length)}
 document.addEventListener('pointerdown',e=>document.querySelectorAll('.dd.open').forEach(d=>{if(!d.contains(e.target))d.classList.remove('open')}));
-seg('#sg-lens',b=>{const v=b.dataset.v,on=S.lenses.includes(v);if(on&&S.lenses.length==1)return;S.lenses=on?S.lenses.filter(x=>x!=v):[...S.lenses,v];b.classList.toggle('on',!on)});
 $('#sensor-back').onclick=()=>go('draw');
-$('#sensor-ok').onclick=()=>{$('#sens').textContent='M3E Series · '+S.cam+' · '+S.lenses.join('+');S.alt=S.gsd/100*kmin();go('cfg');update()};
-$('#cfg-back').onclick=()=>go('sensor');
+$('#sensor-ok').onclick=()=>{if(!S.lenses.length)return;payload();S.alt=S.gsd/100*kmin();go('cfg');update()};
+$('#cfg-back').onclick=()=>{$('#st-time').textContent='0m 0s';$('#st-photo').textContent='0';go('sensor')};
 seg('#sg-mode',b=>{S.mode=b.dataset.v;$('#sg-mode').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));update()});
 const box=$('#fields');
 box.addEventListener('input',e=>{const f=FM[e.target.closest('.f')?.dataset.k];if(f&&e.target.type=='range')setv(f.k,+e.target.value)});
@@ -294,10 +351,21 @@ box.addEventListener('click',e=>{if(e.target.closest('#adv-open'))return setAdv(
  else if(b.dataset.a=='net'){S.dsm='SRTM 30 m (diunduh, simulasi)';update()}
  else if(b.dataset.a=='start'){if(S.start){S.start=null;placeStart();update()}else{S.picking=true;toast('Tap peta untuk menentukan titik start');sync()}}});
 $('#dsmfile').onchange=e=>{if(e.target.files[0]){S.dsm=e.target.files[0].name;update()}};
-$('#export').onclick=()=>{if(!lastPlan)return;const alt=S.alt,c=a=>a.map(p=>{const l=fromM(p);return l.lng.toFixed(7)+','+l.lat.toFixed(7)+','+alt.toFixed(1)}).join(' ');
+$('#hdisk').onclick=()=>{if(!lastPlan)return;const alt=S.alt,c=a=>a.map(p=>{const l=fromM(p);return l.lng.toFixed(7)+','+l.lat.toFixed(7)+','+alt.toFixed(1)}).join(' ');
  const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${$('#rname').value}</name><Placemark><name>Ortho route</name><LineString><altitudeMode>${AGL()?'relativeToGround':S.altMode.startsWith('ASL')?'absolute':'relativeToGround'}</altitudeMode><coordinates>${c(lastPlan.po)}</coordinates></LineString></Placemark>${lastPlan.pb.length?`<Placemark><name>Oblique route</name><LineString><coordinates>${c(lastPlan.pb)}</coordinates></LineString></Placemark>`:''}</Document></kml>`;
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([kml],{type:'application/vnd.google-earth.kml+xml'}));a.download=($('#rname').value||'route')+'.kml';a.click();toast('KML diekspor')};
 const ab=$('#about'),tgl=v=>{ab.classList.toggle('open',v);ab.setAttribute('aria-hidden',!v)};
 $('#info').onclick=()=>tgl(true);$('#x').onclick=()=>tgl(false);ab.addEventListener('pointerdown',e=>{if(e.target===ab)tgl(false)});addEventListener('keydown',e=>{if(e.key=='Escape')tgl(false)});
-build();links();sync();go('menu');
+const cf=$('#confirm'),tc=v=>{cf.classList.toggle('open',v);cf.setAttribute('aria-hidden',!v)};
+$('#tclear').onclick=()=>tc(true);$('#cc').onclick=()=>tc(false);cf.addEventListener('pointerdown',e=>{if(e.target===cf)tc(false)});addEventListener('keydown',e=>{if(e.key=='Escape')tc(false)});
+$('#cx').onclick=()=>{tc(false);clearPts();if(S.step!='menu')go('draw')};$('#tundo').onclick=undoPt;
+const q=$('#q'),sr=$('#sres'),fly=(la,ln)=>{map.flyTo([la,ln],18,{duration:RM?0:1.2});sr.hidden=true};
+async function search(){const v=q.value.trim();if(!v)return;const m=v.match(/^(-?\d+(?:\.\d+)?)[,\s]+(-?\d+(?:\.\d+)?)$/);if(m)return fly(+m[1],+m[2]);
+ try{const d=await(await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q='+encodeURIComponent(v))).json();sr.innerHTML='';
+  if(!d.length)toast('Lokasi tidak ditemukan');d.forEach(x=>{const b=document.createElement('button');b.textContent=x.display_name;b.dataset.la=x.lat;b.dataset.ln=x.lon;sr.appendChild(b)});sr.hidden=!d.length}catch(e){toast('Pencarian gagal, periksa koneksi')}}
+q.addEventListener('keydown',e=>{if(e.key=='Enter')search()});const sbox=$('#search'),sopen=v=>{sbox.classList.toggle('open',v);if(v)setTimeout(()=>q.focus(),140);else{q.value='';sr.hidden=true;q.blur()}};
+$('#qb').onclick=()=>sbox.classList.contains('open')?search():sopen(true);$('#qcancel').onclick=()=>sopen(false);
+$('#home').onclick=()=>{clearPts();S.start=null;placeStart();S.air=null;S.cam=null;S.lenses=[];S.searchDone=false;lastPlan=null;sens();go('menu')};sr.addEventListener('click',e=>{const b=e.target.closest('button');if(b)fly(+b.dataset.la,+b.dataset.ln)});
+document.addEventListener('pointerdown',e=>{if(!$('#search').contains(e.target))sr.hidden=true});
+build();sens();links();sync();go('menu');
 </script></body></html>
